@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Adventure Game - Samantha's Homework</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const MathAdventureGame = () => {
+          const [currentLevel, setCurrentLevel] = useState(0);
+          const [score, setScore] = useState(0);
+          const [lives, setLives] = useState(3);
+          const [showFeedback, setShowFeedback] = useState(false);
+          const [isCorrect, setIsCorrect] = useState(false);
+          const [gameOver, setGameOver] = useState(false);
+          const [gameWon, setGameWon] = useState(false);
+
+          const levels = [
+            {
+              type: 'place-value',
+              question: "What is the place value of 7 in the number 73?",
+              visual: (
+                <div className="flex gap-4 justify-center my-4">
+                  <div className="text-center">
+                    <div className="text-6xl font-bold text-green-600">7</div>
+                    <div className="text-sm mt-2">← What place?</div>
+                  </div>
+                  <div className="text-6xl font-bold text-gray-400">3</div>
+                </div>
+              ),
+              options: ["ones", "tens", "hundreds"],
+              correct: 1,
+              explanation: "The 7 is in the TENS place! It means 7 groups of ten = 70!"
+            },
+            {
+              type: 'place-value-visual',
+              question: "Which number shows 9 tens and 9 ones?",
+              visual: (
+                <div className="flex gap-8 justify-center my-4">
+                  <div className="text-center">
+                    <div className="grid grid-cols-3 gap-1 mb-2">
+                      {[...Array(9)].map((_, i) => (
+                        <div key={i} className="text-2xl">👜</div>
+                      ))}
+                    </div>
+                    <div className="font-bold">9 tens</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="grid grid-cols-3 gap-1 mb-2">
+                      {[...Array(9)].map((_, i) => (
+                        <div key={i} className="text-2xl">💎</div>
+                      ))}
+                    </div>
+                    <div className="font-bold">9 ones</div>
+                  </div>
+                </div>
+              ),
+              options: ["9", "19", "90", "99"],
+              correct: 3,
+              explanation: "9 tens (90) + 9 ones (9) = 99! Great job!"
+            },
+            {
+              type: 'decompose',
+              question: "7 tens and 5 ones equals what number?",
+              visual: (
+                <div className="flex gap-6 justify-center my-4">
+                  <div className="text-center">
+                    <div className="grid grid-cols-4 gap-1">
+                      {[...Array(7)].map((_, i) => (
+                        <div key={i} className="text-3xl">👜</div>
+                      ))}
+                    </div>
+                    <div className="font-bold text-lg mt-2">7 tens = 70</div>
+                  </div>
+                  <div className="text-4xl">+</div>
+                  <div className="text-center">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className="text-3xl">💎</div>
+                      ))}
+                    </div>
+                    <div className="font-bold text-lg mt-2">5 ones = 5</div>
+                  </div>
+                </div>
+              ),
+              options: ["7", "57", "75", "705"],
+              correct: 2,
+              explanation: "70 + 5 = 75! You added tens and ones perfectly!"
+            },
+            {
+              type: 'expanded-form',
+              question: "What is the expanded form of 64?",
+              visual: (
+                <div className="text-center my-4">
+                  <div className="text-6xl font-bold text-purple-600 mb-4">64</div>
+                  <div className="text-lg">Break it into tens and ones!</div>
+                </div>
+              ),
+              options: ["6 + 4", "6 + 40", "60 + 4", "60 + 40"],
+              correct: 2,
+              explanation: "64 = 60 + 4! The 6 is worth 60 and the 4 is worth 4!"
+            },
+            {
+              type: 'pattern',
+              question: "What's the missing number? 25, 30, 35, 40, ___",
+              visual: (
+                <div className="flex gap-4 justify-center my-4">
+                  {[25, 30, 35, 40].map((num, i) => (
+                    <div key={i} className="bg-blue-100 rounded-lg p-4 text-2xl font-bold">
+                      {num}
+                    </div>
+                  ))}
+                  <div className="bg-yellow-200 rounded-lg p-4 text-2xl font-bold">
+                    ?
+                  </div>
+                </div>
+              ),
+              options: ["5", "41", "45", "50"],
+              correct: 2,
+              explanation: "We count by 5's! 25, 30, 35, 40, 45! Each time we add 5!"
+            },
+            {
+              type: 'addition',
+              question: "Jenny has 15 lollipops 🍭 and 12 candies 🍬. How many treats does she have in all?",
+              visual: (
+                <div className="text-center my-4">
+                  <div className="flex gap-8 justify-center mb-4">
+                    <div>
+                      <div className="text-4xl mb-2">🍭</div>
+                      <div className="text-2xl font-bold">15</div>
+                    </div>
+                    <div className="text-4xl">+</div>
+                    <div>
+                      <div className="text-4xl mb-2">🍬</div>
+                      <div className="text-2xl font-bold">12</div>
+                    </div>
+                  </div>
+                </div>
+              ),
+              options: ["17", "27", "37", "47"],
+              correct: 1,
+              explanation: "15 + 12 = 27! You counted all the treats correctly!"
+            },
+            {
+              type: 'addition-tens',
+              question: "There are 20 cubes and 3 more cubes. How many cubes in all?",
+              visual: (
+                <div className="flex gap-6 justify-center my-4">
+                  <div className="text-center">
+                    <div className="grid grid-cols-5 gap-1">
+                      {[...Array(20)].map((_, i) => (
+                        <div key={i} className="text-2xl">🟦</div>
+                      ))}
+                    </div>
+                    <div className="font-bold mt-2">20 cubes</div>
+                  </div>
+                  <div className="text-4xl">+</div>
+                  <div className="text-center">
+                    <div className="flex gap-1">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="text-2xl">🟦</div>
+                      ))}
+                    </div>
+                    <div className="font-bold mt-2">3 cubes</div>
+                  </div>
+                </div>
+              ),
+              options: ["22", "23", "32", "203"],
+              correct: 1,
+              explanation: "20 + 3 = 23 cubes! You added them all together!"
+            },
+            {
+              type: 'two-digit-addition',
+              question: "There are 73 red apples 🍎 and 5 green apples 🍏. How many apples in all?",
+              visual: (
+                <div className="text-center my-4">
+                  <div className="flex gap-6 justify-center items-center">
+                    <div>
+                      <div className="text-5xl mb-2">🍎</div>
+                      <div className="text-2xl font-bold">73</div>
+                    </div>
+                    <div className="text-4xl">+</div>
+                    <div>
+                      <div className="text-5xl mb-2">🍏</div>
+                      <div className="text-2xl font-bold">5</div>
+                    </div>
+                  </div>
+                </div>
+              ),
+              options: ["73", "74", "78", "79"],
+              correct: 2,
+              explanation: "73 + 5 = 78 apples! You're an addition superstar!"
+            }
+          ];
+
+          const handleAnswer = (selectedIndex) => {
+            if (showFeedback) return;
+
+            const correct = selectedIndex === levels[currentLevel].correct;
+            setIsCorrect(correct);
+            setShowFeedback(true);
+
+            if (correct) {
+              setScore(score + 10);
+              setTimeout(() => {
+                if (currentLevel < levels.length - 1) {
+                  setCurrentLevel(currentLevel + 1);
+                  setShowFeedback(false);
+                } else {
+                  setGameWon(true);
+                }
+              }, 2000);
+            } else {
+              const newLives = lives - 1;
+              setLives(newLives);
+              if (newLives === 0) {
+                setGameOver(true);
+              }
+              setTimeout(() => {
+                setShowFeedback(false);
+              }, 2000);
+            }
+          };
+
+          const restartGame = () => {
+            setCurrentLevel(0);
+            setScore(0);
+            setLives(3);
+            setShowFeedback(false);
+            setGameOver(false);
+            setGameWon(false);
+          };
+
+          if (gameOver) {
+            return (
+              <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-red-100 to-orange-100 min-h-screen flex items-center justify-center">
+                <div className="bg-white rounded-3xl shadow-2xl p-12 text-center">
+                  <div className="text-8xl mb-6">😢</div>
+                  <h2 className="text-4xl font-bold text-red-600 mb-4">Game Over</h2>
+                  <p className="text-2xl mb-4">Your Score: {score} points</p>
+                  <p className="text-xl text-gray-600 mb-8">Great try! Let's practice more!</p>
+                  <button
+                    onClick={restartGame}
+                    className="bg-blue-500 text-white px-8 py-4 rounded-xl text-2xl font-bold hover:bg-blue-600 shadow-lg"
+                  >
+                    Try Again! 🎮
+                  </button>
+                  <div className="mt-6">
+                    <a href="index.html" className="text-purple-600 underline text-lg">← Back to Games</a>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          if (gameWon) {
+            return (
+              <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-yellow-100 to-green-100 min-h-screen flex items-center justify-center">
+                <div className="bg-white rounded-3xl shadow-2xl p-12 text-center">
+                  <div className="text-8xl mb-6">🎉🏆🎉</div>
+                  <h2 className="text-5xl font-bold text-green-600 mb-4">YOU WIN!</h2>
+                  <p className="text-3xl mb-4">Final Score: {score} points</p>
+                  <div className="flex gap-2 justify-center mb-8 flex-wrap">
+                    {[...Array(score / 10)].map((_, i) => (
+                      <span key={i} className="text-4xl">⭐</span>
+                    ))}
+                  </div>
+                  <p className="text-2xl text-purple-600 mb-8">You're a Math Champion! 👑</p>
+                  <button
+                    onClick={restartGame}
+                    className="bg-purple-500 text-white px-8 py-4 rounded-xl text-2xl font-bold hover:bg-purple-600 shadow-lg mb-4"
+                  >
+                    Play Again! 🎮
+                  </button>
+                  <div className="mt-6">
+                    <a href="index.html" className="text-purple-600 underline text-lg">← Back to Games</a>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          const level = levels[currentLevel];
+
+          return (
+            <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-purple-100 to-pink-100 min-h-screen">
+              <div className="bg-white rounded-3xl shadow-2xl p-8">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex gap-2">
+                    {[...Array(lives)].map((_, i) => (
+                      <span key={i} className="text-3xl">❤️</span>
+                    ))}
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm text-gray-500">Level</div>
+                    <div className="text-3xl font-bold text-purple-600">{currentLevel + 1} / {levels.length}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-3xl">🏆</span>
+                    <div className="text-3xl font-bold text-yellow-600">{score}</div>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-4 mb-8">
+                  <div
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
+                    style={{ width: `${((currentLevel + 1) / levels.length) * 100}%` }}
+                  />
+                </div>
+
+                {/* Question */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mb-8">
+                  <h2 className="text-3xl font-bold text-purple-700 mb-6 text-center">
+                    {level.question}
+                  </h2>
+                  {level.visual}
+                </div>
+
+                {/* Answer Options */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {level.options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswer(index)}
+                      disabled={showFeedback}
+                      className={`p-6 rounded-xl text-2xl font-bold transition-all shadow-lg hover:shadow-xl ${
+                        showFeedback && index === level.correct
+                          ? 'bg-green-500 text-white scale-105'
+                          : showFeedback && !isCorrect && index === level.options.indexOf(option)
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500'
+                      } ${showFeedback ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Feedback */}
+                {showFeedback && (
+                  <div className={`rounded-xl p-6 text-center ${
+                    isCorrect ? 'bg-green-100' : 'bg-red-100'
+                  }`}>
+                    <div className="text-6xl mb-3">
+                      {isCorrect ? '🎉' : '💪'}
+                    </div>
+                    <div className={`text-2xl font-bold mb-2 ${
+                      isCorrect ? 'text-green-700' : 'text-red-700'
+                    }`}>
+                      {isCorrect ? 'Correct!' : 'Oops! Try Again!'}
+                    </div>
+                    <div className="text-xl text-gray-700">
+                      {level.explanation}
+                    </div>
+                  </div>
+                )}
+
+                {/* Back Button */}
+                <div className="mt-6 text-center">
+                  <a href="index.html" className="text-purple-600 underline text-lg">← Back to Games</a>
+                </div>
+              </div>
+
+              {/* Instructions */}
+              <div className="mt-6 bg-white bg-opacity-80 rounded-xl p-4 text-center">
+                <p className="text-gray-600">
+                  💡 <strong>For Parents:</strong> Read each question aloud and let Samantha think before clicking!
+                </p>
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<MathAdventureGame />, document.getElementById('root'));
+    </script>
+</body>
+</html>
