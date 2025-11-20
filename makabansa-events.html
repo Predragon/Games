@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makabansa: School Events Game</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, createElement } = React;
+        const { Trophy, Star, Book, Users, Flag, Heart, Award, Sparkles } = lucide;
+
+        const SchoolEventsGame = () => {
+          const [currentScene, setCurrentScene] = useState('welcome');
+          const [score, setScore] = useState(0);
+          const [collectedEvents, setCollectedEvents] = useState([]);
+          const [selectedEvent, setSelectedEvent] = useState(null);
+
+          const schoolEvents = [
+            {
+              id: 1,
+              name: 'Flag Ceremony',
+              nameTagalog: 'Seremonya ng Watawat',
+              icon: Flag,
+              color: 'bg-blue-500',
+              description: 'We show respect to our country by standing during the flag ceremony.',
+              descriptionTagalog: 'Nagpapakita tayo ng respeto sa ating bansa sa pamamagitan ng pagtayo sa seremonya.',
+              value: 'Patriotism',
+              valueTagalog: 'Pagmamahal sa Bayan'
+            },
+            {
+              id: 2,
+              name: 'Sports Day',
+              nameTagalog: 'Araw ng Palakasan',
+              icon: Trophy,
+              color: 'bg-green-500',
+              description: 'We learn teamwork and healthy competition through sports.',
+              descriptionTagalog: 'Natututo tayo ng pagtutulungan at malusog na kompetisyon sa palakasan.',
+              value: 'Teamwork',
+              valueTagalog: 'Pagtutulungan'
+            },
+            {
+              id: 3,
+              name: 'Reading Program',
+              nameTagalog: 'Programa sa Pagbasa',
+              icon: Book,
+              color: 'bg-purple-500',
+              description: 'Reading helps us learn and grow our knowledge.',
+              descriptionTagalog: 'Ang pagbasa ay tumutulong sa atin na matuto at lumaki ang ating kaalaman.',
+              value: 'Love of Learning',
+              valueTagalog: 'Pagmamahal sa Pag-aaral'
+            },
+            {
+              id: 4,
+              name: 'Cultural Festival',
+              nameTagalog: 'Pista ng Kultura',
+              icon: Sparkles,
+              color: 'bg-pink-500',
+              description: 'We celebrate our Filipino culture and traditions.',
+              descriptionTagalog: 'Ipinagdiriwang natin ang ating kulturang Pilipino at tradisyon.',
+              value: 'Cultural Pride',
+              valueTagalog: 'Pagpapahalaga sa Kultura'
+            },
+            {
+              id: 5,
+              name: 'Community Service',
+              nameTagalog: 'Paglilingkod sa Komunidad',
+              icon: Heart,
+              color: 'bg-red-500',
+              description: 'Helping others makes our community stronger.',
+              descriptionTagalog: 'Ang pagtulong sa iba ay nagpapalakas ng ating komunidad.',
+              value: 'Service',
+              valueTagalog: 'Paglilingkod'
+            },
+            {
+              id: 6,
+              name: 'Recognition Day',
+              nameTagalog: 'Araw ng Parangal',
+              icon: Award,
+              color: 'bg-yellow-500',
+              description: 'We celebrate hard work and achievements.',
+              descriptionTagalog: 'Ipinagdiriwang natin ang sipag at tagumpay.',
+              value: 'Excellence',
+              valueTagalog: 'Kahusayan'
+            }
+          ];
+
+          const handleEventClick = (event) => {
+            if (!collectedEvents.includes(event.id)) {
+              setCollectedEvents([...collectedEvents, event.id]);
+              setScore(score + 10);
+              setSelectedEvent(event);
+            } else {
+              setSelectedEvent(event);
+            }
+          };
+
+          const resetGame = () => {
+            setScore(0);
+            setCollectedEvents([]);
+            setSelectedEvent(null);
+            setCurrentScene('welcome');
+          };
+
+          if (currentScene === 'welcome') {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-8 flex items-center justify-center">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center">
+                  <div className="mb-6">
+                    <Users className="w-20 h-20 mx-auto text-purple-600 mb-4" />
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">Makabansa 1</h1>
+                    <h2 className="text-2xl font-semibold text-purple-600 mb-4">School Events Game</h2>
+                    <p className="text-lg text-gray-600 mb-2">Laro ng mga Mahahalagang Pangyayari</p>
+                  </div>
+                  
+                  <div className="bg-purple-50 rounded-xl p-6 mb-6">
+                    <p className="text-gray-700 mb-3">
+                      <strong>Paano Maglaro / How to Play:</strong>
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      Click on each school event to learn about important civic values and collect stars! 
+                      Discover why these events matter in your school community.
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      I-click ang bawat pangyayari sa paaralan upang matuto tungkol sa mahahalagang 
+                      pagpapahalaga at mangolekta ng mga bituin!
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentScene('game')}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition shadow-lg"
+                  >
+                    Magsimula / Start Game
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-4 md:p-8">
+              <div className="max-w-6xl mx-auto">
+                {/* Header */}
+                <div className="bg-white rounded-2xl shadow-lg p-4 mb-6 flex justify-between items-center">
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Important School Events</h1>
+                    <p className="text-gray-600">Mahahalagang Pangyayari sa Paaralan</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-2 text-yellow-600 text-2xl font-bold">
+                      <Star className="fill-yellow-500" />
+                      {score}
+                    </div>
+                    <p className="text-sm text-gray-600">{collectedEvents.length}/{schoolEvents.length} events</p>
+                  </div>
+                </div>
+
+                {/* Game Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                  {schoolEvents.map((event) => {
+                    const Icon = event.icon;
+                    const isCollected = collectedEvents.includes(event.id);
+                    
+                    return (
+                      <div
+                        key={event.id}
+                        onClick={() => handleEventClick(event)}
+                        className={`${event.color} rounded-2xl p-6 cursor-pointer transform transition hover:scale-105 shadow-lg ${
+                          isCollected ? 'ring-4 ring-yellow-400' : ''
+                        }`}
+                      >
+                        <div className="text-white text-center">
+                          <Icon className="w-16 h-16 mx-auto mb-3" />
+                          <h3 className="font-bold text-xl mb-1">{event.nameTagalog}</h3>
+                          <p className="text-sm opacity-90">{event.name}</p>
+                          {isCollected && (
+                            <div className="mt-3">
+                              <Star className="w-8 h-8 mx-auto fill-yellow-300 text-yellow-300" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Event Details Modal */}
+                {selectedEvent && (
+                  <div className="bg-white rounded-2xl shadow-2xl p-6 mb-6 border-4 border-purple-300">
+                    <div className="flex items-start gap-4">
+                      <div className={`${selectedEvent.color} rounded-xl p-4`}>
+                        {createElement(selectedEvent.icon, { className: "w-12 h-12 text-white" })}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-1">{selectedEvent.nameTagalog}</h3>
+                        <p className="text-gray-600 mb-4">{selectedEvent.name}</p>
+                        
+                        <div className="bg-purple-50 rounded-xl p-4 mb-3">
+                          <p className="text-gray-700 mb-2">{selectedEvent.descriptionTagalog}</p>
+                          <p className="text-gray-600 text-sm">{selectedEvent.description}</p>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 text-white">
+                          <p className="font-bold mb-1">Pagpapahalaga / Civic Value:</p>
+                          <p className="text-lg">{selectedEvent.valueTagalog} / {selectedEvent.value}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Completion Message */}
+                {collectedEvents.length === schoolEvents.length && (
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl shadow-2xl p-8 text-center">
+                    <Trophy className="w-20 h-20 mx-auto text-white mb-4" />
+                    <h2 className="text-3xl font-bold text-white mb-2">Ang Galing! Excellent!</h2>
+                    <p className="text-white text-lg mb-4">
+                      You've learned about all important school events!
+                    </p>
+                    <p className="text-white mb-6">
+                      Natuto ka tungkol sa lahat ng mahahalagang pangyayari sa paaralan!
+                    </p>
+                    <button
+                      onClick={resetGame}
+                      className="bg-white text-purple-600 px-8 py-3 rounded-full font-bold hover:scale-105 transform transition"
+                    >
+                      Maglaro Muli / Play Again
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SchoolEventsGame />);
+    </script>
+</body>
+</html>
