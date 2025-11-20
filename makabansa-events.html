@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makabansa: School Events Game</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        /* Custom styles to make the colored SVGs look good inside the event card */
+        .svg-icon-style {
+            width: 80px; /* Adjusted size for the new SVGs */
+            height: 80px; /* Adjusted size for the new SVGs */
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- NEW SVG ICON COMPONENTS INCORPORATED FROM SECOND FILE ---
+
+        const Trophy = ({ className }) => (
+            <svg className={className} width="200" height="200" viewBox="0 0 200 200">
+                <rect x="70" y="150" width="60" height="15" rx="3" fill="#8B7355"/>
+                <rect x="80" y="130" width="40" height="20" fill="#FFD700"/>
+                <rect x="90" y="110" width="20" height="20" fill="#FFD700"/>
+                <path d="M 60 110 Q 60 70 100 50 Q 140 70 140 110 L 130 110 L 130 100 Q 130 80 100 70 Q 70 80 70 100 L 70 110 Z" fill="#FFD700"/>
+                <path d="M 60 85 Q 45 85 45 100 Q 45 110 55 110" stroke="#FFD700" strokeWidth="6" fill="none"/>
+                <path d="M 140 85 Q 155 85 155 100 Q 155 110 145 110" stroke="#FFD700" strokeWidth="6" fill="none"/>
+                <circle cx="100" cy="85" r="15" fill="#FFA500"/>
+                <polygon points="100,75 102,81 108,81 103,85 105,91 100,87 95,91 97,85 92,81 98,81" fill="#FFD700"/>
+                <circle cx="150" cy="50" r="20" fill="#C0C0C0" stroke="#FFD700" strokeWidth="3"/>
+                <polygon points="150,42 151,46 155,46 152,48 153,52 150,50 147,52 148,48 145,46 149,46" fill="#FFD700"/>
+                <rect x="145" y="20" width="3" height="15" fill="#E74C3C"/>
+                <rect x="152" y="20" width="3" height="15" fill="#E74C3C"/>
+            </svg>
+        );
+
+        const Star = ({ className }) => (
+            <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+        );
+
+        const Book = ({ className }) => (
+            <svg className={className} width="200" height="200" viewBox="0 0 200 200">
+                <path d="M 40 80 Q 40 60 100 60 Q 160 60 160 80 L 160 150 Q 160 160 100 160 Q 40 160 40 150 Z" fill="#8B4789"/>
+                <path d="M 40 80 Q 40 70 100 70 L 100 150 Q 40 150 40 140 Z" fill="#FFF"/>
+                <rect x="50" y="85" width="35" height="3" rx="1" fill="#333"/>
+                <rect x="50" y="95" width="40" height="3" rx="1" fill="#333"/>
+                <rect x="50" y="105" width="30" height="3" rx="1" fill="#333"/>
+                <rect x="50" y="115" width="38" height="3" rx="1" fill="#333"/>
+                <rect x="50" y="125" width="32" height="3" rx="1" fill="#333"/>
+                <path d="M 160 80 Q 160 70 100 70 L 100 150 Q 160 150 160 140 Z" fill="#FFF"/>
+                <rect x="115" y="85" width="35" height="3" rx="1" fill="#333"/>
+                <rect x="110" y="95" width="40" height="3" rx="1" fill="#333"/>
+                <rect x="120" y="105" width="30" height="3" rx="1" fill="#333"/>
+                <rect x="112" y="115" width="38" height="3" rx="1" fill="#333"/>
+                <rect x="118" y="125" width="32" height="3" rx="1" fill="#333"/>
+                <line x1="100" y1="70" x2="100" y2="150" stroke="#8B4789" strokeWidth="2"/>
+                <polygon points="50,40 52,46 58,46 53,50 55,56 50,52 45,56 47,50 42,46 48,46" fill="#FFD700"/>
+                <polygon points="150,40 152,46 158,46 153,50 155,56 150,52 145,56 147,50 142,46 148,46" fill="#FFD700"/>
+                <polygon points="100,30 102,36 108,36 103,40 105,46 100,42 95,46 97,40 92,36 98,36" fill="#FFD700"/>
+            </svg>
+        );
+
+        const Users = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        );
+
+        const Flag = ({ className }) => (
+            <svg className={className} width="160" height="200" viewBox="0 0 160 200">
+                <rect x="20" y="10" width="8" height="180" fill="#8B4513"/>
+                <rect x="18" y="185" width="12" height="15" fill="#654321"/>
+                <rect x="28" y="30" width="120" height="60" fill="#0038A8"/>
+                <rect x="28" y="90" width="120" height="60" fill="#CE1126"/>
+                <polygon points="28,30 28,150 88,90" fill="white"/>
+                <circle cx="58" cy="90" r="12" fill="#FCD116"/>
+                <line x1="58" y1="75" x2="58" y2="70" stroke="#FCD116" strokeWidth="2"/>
+                <line x1="58" y1="105" x2="58" y2="110" stroke="#FCD116" strokeWidth="2"/>
+                <line x1="73" y1="90" x2="78" y2="90" stroke="#FCD116" strokeWidth="2"/>
+                <line x1="43" y1="90" x2="38" y2="90" stroke="#FCD116" strokeWidth="2"/>
+                <polygon points="48,80 49,83 52,83 50,85 51,88 48,86 45,88 46,85 44,83 47,83" fill="#FCD116"/>
+                <polygon points="68,80 69,83 72,83 70,85 71,88 68,86 65,88 66,85 64,83 67,83" fill="#FCD116"/>
+                <polygon points="58,100 59,103 62,103 60,105 61,108 58,106 55,108 56,105 54,103 57,103" fill="#FCD116"/>
+            </svg>
+        );
+
+        const Heart = ({ className }) => (
+            <svg className={className} width="200" height="200" viewBox="0 0 200 200">
+                <path d="M 100 160 C 100 160 40 120 40 80 C 40 60 55 50 70 50 C 80 50 90 55 100 65 C 110 55 120 50 130 50 C 145 50 160 60 160 80 C 160 120 100 160 100 160 Z" fill="#E74C3C"/>
+                <ellipse cx="80" cy="75" rx="15" ry="10" fill="#FF6B6B" opacity="0.6"/>
+                <ellipse cx="45" cy="100" rx="12" ry="18" fill="#FFE4B5"/>
+                <rect x="33" y="100" width="12" height="35" rx="6" fill="#FFE4B5"/>
+                <ellipse cx="39" cy="90" rx="4" ry="12" fill="#FFE4B5"/>
+                <ellipse cx="45" cy="88" rx="4" ry="14" fill="#FFE4B5"/>
+                <ellipse cx="51" cy="88" rx="4" ry="13" fill="#FFE4B5"/>
+                <ellipse cx="155" cy="100" rx="12" ry="18" fill="#FFE4B5"/>
+                <rect x="155" y="100" width="12" height="35" rx="6" fill="#FFE4B5"/>
+                <ellipse cx="149" cy="90" rx="4" ry="13" fill="#FFE4B5"/>
+                <ellipse cx="155" cy="88" rx="4" ry="14" fill="#FFE4B5"/>
+                <ellipse cx="161" cy="90" rx="4" ry="12" fill="#FFE4B5"/>
+                <path d="M 50 45 C 50 45 35 35 35 25 C 35 20 38 17 42 17 C 45 17 48 19 50 22 C 52 19 55 17 58 17 C 62 17 65 20 65 25 C 65 35 50 45 50 45 Z" fill="#FF69B4"/>
+                <path d="M 150 45 C 150 45 135 35 135 25 C 135 20 138 17 142 17 C 145 17 148 19 150 22 C 152 19 155 17 158 17 C 162 17 165 20 165 25 C 165 35 150 45 150 45 Z" fill="#FF69B4"/>
+                <path d="M 100 30 C 100 30 88 22 88 14 C 88 10 90 8 93 8 C 95 8 97 9 100 12 C 103 9 105 8 107 8 C 110 8 112 10 112 14 C 112 22 100 30 100 30 Z" fill="#FFD700"/>
+            </svg>
+        );
+
+        const Award = ({ className }) => (
+            <svg className={className} width="200" height="200" viewBox="0 0 200 200">
+                <rect x="50" y="40" width="100" height="130" rx="5" fill="#FFF" stroke="#DAA520" strokeWidth="3"/>
+                <rect x="58" y="48" width="84" height="114" rx="3" fill="none" stroke="#DAA520" strokeWidth="1" strokeDasharray="4,4"/>
+                <rect x="70" y="65" width="60" height="4" rx="2" fill="#333"/>
+                <rect x="75" y="80" width="50" height="3" rx="1.5" fill="#666"/>
+                <rect x="75" y="90" width="50" height="3" rx="1.5" fill="#666"/>
+                <rect x="75" y="100" width="50" height="3" rx="1.5" fill="#666"/>
+                <circle cx="100" cy="130" r="18" fill="#FFD700" stroke="#DAA520" strokeWidth="2"/>
+                <circle cx="100" cy="130" r="12" fill="#FFA500"/>
+                <polygon points="100,120 102,126 108,126 103,130 105,136 100,132 95,136 97,130 92,126 98,126" fill="#FFD700"/>
+                <polygon points="85,148 90,148 88,175 85,170" fill="#E74C3C"/>
+                <polygon points="110,148 115,148 117,170 114,175" fill="#3498DB"/>
+                <circle cx="155" cy="80" r="25" fill="#3498DB"/>
+                <circle cx="155" cy="80" r="18" fill="#5DADE2"/>
+                <polygon points="155,70 157,76 163,76 158,80 160,86 155,82 150,86 152,80 147,76 153,76" fill="#FFD700"/>
+                <polygon points="145,105 150,105 148,130 145,125" fill="#2874A6"/>
+                <polygon points="160,105 165,105 167,125 164,130" fill="#2874A6"/>
+                <rect x="145" y="100" width="20" height="8" fill="#3498DB"/>
+                <polygon points="35,60 36,63 39,63 37,65 38,68 35,66 32,68 33,65 31,63 34,63" fill="#FFD700"/>
+                <polygon points="170,120 171,123 174,123 172,125 173,128 170,126 167,128 168,125 166,123 169,123" fill="#FFD700"/>
+                <polygon points="45,140 46,143 49,143 47,145 48,148 45,146 42,148 43,145 41,143 44,143" fill="#FFD700"/>
+            </svg>
+        );
+
+        const Sparkles = ({ className }) => (
+            <svg className={className} width="200" height="200" viewBox="0 0 200 200">
+                <path d="M 100 40 L 85 55 L 85 120 L 75 140 L 75 160 L 85 160 L 85 130 L 95 110 L 95 160 L 105 160 L 105 110 L 115 130 L 115 160 L 125 160 L 125 140 L 115 120 L 115 55 Z" fill="#FFF" stroke="#DAA520" strokeWidth="2"/>
+                <circle cx="100" cy="40" r="8" fill="#FFE4B5"/>
+                <circle cx="90" cy="70" r="2" fill="#DAA520"/>
+                <circle cx="95" cy="75" r="2" fill="#DAA520"/>
+                <circle cx="100" cy="70" r="2" fill="#DAA520"/>
+                <circle cx="105" cy="75" r="2" fill="#DAA520"/>
+                <circle cx="110" cy="70" r="2" fill="#DAA520"/>
+                <circle cx="88" cy="85" r="2" fill="#E74C3C"/>
+                <circle cx="93" cy="90" r="2" fill="#E74C3C"/>
+                <circle cx="107" cy="90" r="2" fill="#E74C3C"/>
+                <circle cx="112" cy="85" r="2" fill="#E74C3C"/>
+                <polygon points="30,25 40,25 35,35" fill="#E74C3C"/>
+                <polygon points="45,25 55,25 50,35" fill="#FFD700"/>
+                <polygon points="60,25 70,25 65,35" fill="#3498DB"/>
+                <polygon points="130,25 140,25 135,35" fill="#3498DB"/>
+                <polygon points="145,25 155,25 150,35" fill="#FFD700"/>
+                <polygon points="160,25 170,25 165,35" fill="#E74C3C"/>
+                <line x1="25" y1="25" x2="175" y2="25" stroke="#333" strokeWidth="2"/>
+                <circle cx="45" cy="150" r="8" fill="#E74C3C"/>
+                <circle cx="40" cy="145" r="5" fill="#FF69B4"/>
+                <circle cx="50" cy="145" r="5" fill="#FF69B4"/>
+                <circle cx="45" cy="140" r="5" fill="#FF69B4"/>
+                <circle cx="45" cy="156" r="5" fill="#FF69B4"/>
+                <circle cx="155" cy="150" r="8" fill="#FFD700"/>
+                <circle cx="150" cy="145" r="5" fill="#FFA500"/>
+                <circle cx="160" cy="145" r="5" fill="#FFA500"/>
+                <circle cx="155" cy="140" r="5" fill="#FFA500"/>
+                <circle cx="155" cy="156" r="5" fill="#FFA500"/>
+            </svg>
+        );
+
+        // --- END OF NEW SVG ICON COMPONENTS ---
+
+
+        const SchoolEventsGame = () => {
+          const [currentScene, setCurrentScene] = useState('welcome');
+          const [score, setScore] = useState(0);
+          const [collectedEvents, setCollectedEvents] = useState([]);
+          const [selectedEvent, setSelectedEvent] = useState(null);
+
+          const schoolEvents = [
+            {
+              id: 1,
+              name: 'Flag Ceremony',
+              nameTagalog: 'Seremonya ng Watawat',
+              icon: Flag,
+              color: 'bg-blue-500',
+              description: 'We show respect to our country by standing during the flag ceremony.',
+              descriptionTagalog: 'Nagpapakita tayo ng respeto sa ating bansa sa pamamagitan ng pagtayo sa seremonya.',
+              value: 'Patriotism',
+              valueTagalog: 'Pagmamahal sa Bayan'
+            },
+            {
+              id: 2,
+              name: 'Sports Day',
+              nameTagalog: 'Araw ng Palakasan',
+              icon: Trophy,
+              color: 'bg-green-500',
+              description: 'We learn teamwork and healthy competition through sports.',
+              descriptionTagalog: 'Natututo tayo ng pagtutulungan at malusog na kompetisyon sa palakasan.',
+              value: 'Teamwork',
+              valueTagalog: 'Pagtutulungan'
+            },
+            {
+              id: 3,
+              name: 'Reading Program',
+              nameTagalog: 'Programa sa Pagbasa',
+              icon: Book,
+              color: 'bg-purple-500',
+              description: 'Reading helps us learn and grow our knowledge.',
+              descriptionTagalog: 'Ang pagbasa ay tumutulong sa atin na matuto at lumaki ang ating kaalaman.',
+              value: 'Love of Learning',
+              valueTagalog: 'Pagmamahal sa Pag-aaral'
+            },
+            {
+              id: 4,
+              name: 'Cultural Festival',
+              nameTagalog: 'Pista ng Kultura',
+              icon: Sparkles,
+              color: 'bg-pink-500',
+              description: 'We celebrate our Filipino culture and traditions.',
+              descriptionTagalog: 'Ipinagdiriwang natin ang ating kulturang Pilipino at tradisyon.',
+              value: 'Cultural Pride',
+              valueTagalog: 'Pagpapahalaga sa Kultura'
+            },
+            {
+              id: 5,
+              name: 'Community Service',
+              nameTagalog: 'Paglilingkod sa Komunidad',
+              icon: Heart,
+              color: 'bg-red-500',
+              description: 'Helping others makes our community stronger.',
+              descriptionTagalog: 'Ang pagtulong sa iba ay nagpapalakas ng ating komunidad.',
+              value: 'Service',
+              valueTagalog: 'Paglilingkod'
+            },
+            {
+              id: 6,
+              name: 'Recognition Day',
+              nameTagalog: 'Araw ng Parangal',
+              icon: Award,
+              color: 'bg-yellow-500',
+              description: 'We celebrate hard work and achievements.',
+              descriptionTagalog: 'Ipinagdiriwang natin ang sipag at tagumpay.',
+              value: 'Excellence',
+              valueTagalog: 'Kahusayan'
+            }
+          ];
+
+          const handleEventClick = (event) => {
+            if (!collectedEvents.includes(event.id)) {
+              setCollectedEvents([...collectedEvents, event.id]);
+              setScore(score + 10);
+              setSelectedEvent(event);
+            } else {
+              setSelectedEvent(event);
+            }
+          };
+
+          const resetGame = () => {
+            setScore(0);
+            setCollectedEvents([]);
+            setSelectedEvent(null);
+            setCurrentScene('welcome');
+          };
+
+          if (currentScene === 'welcome') {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-8 flex items-center justify-center">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center">
+                  <div className="mb-6">
+                    {/* Using the simple Users icon here */}
+                    <Users className="w-20 h-20 mx-auto text-purple-600 mb-4" /> 
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">Makabansa 1</h1>
+                    <h2 className="text-2xl font-semibold text-purple-600 mb-4">School Events Game</h2>
+                    <p className="text-lg text-gray-600 mb-2">Laro ng mga Mahahalagang Pangyayari</p>
+                  </div>
+                  
+                  <div className="bg-purple-50 rounded-xl p-6 mb-6">
+                    <p className="text-gray-700 mb-3">
+                      <strong>Paano Maglaro / How to Play:</strong>
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      Click on each school event to learn about important civic values and collect stars! 
+                      Discover why these events matter in your school community.
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      I-click ang bawat pangyayari sa paaralan upang matuto tungkol sa mahahalagang 
+                      pagpapahalaga at mangolekta ng mga bituin!
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentScene('game')}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition shadow-lg"
+                  >
+                    Magsimula / Start Game
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 p-4 md:p-8">
+              <div className="max-w-6xl mx-auto">
+                {/* Header */}
+                <div className="bg-white rounded-2xl shadow-lg p-4 mb-6 flex justify-between items-center">
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Important School Events</h1>
+                    <p className="text-gray-600">Mahahalagang Pangyayari sa Paaralan</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-2 text-yellow-600 text-2xl font-bold">
+                      <Star className="w-8 h-8" />
+                      {score}
+                    </div>
+                    <p className="text-sm text-gray-600">{collectedEvents.length}/{schoolEvents.length} events</p>
+                  </div>
+                </div>
+
+                {/* Game Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                  {schoolEvents.map((event) => {
+                    const Icon = event.icon;
+                    const isCollected = collectedEvents.includes(event.id);
+                    
+                    return (
+                      <div
+                        key={event.id}
+                        onClick={() => handleEventClick(event)}
+                        className={`${event.color} rounded-2xl p-6 cursor-pointer transform transition hover:scale-105 shadow-lg ${
+                          isCollected ? 'ring-4 ring-yellow-400' : ''
+                        }`}
+                      >
+                        <div className="text-white text-center">
+                          {/* Using the new class for consistent sizing */}
+                          <Icon className="svg-icon-style mx-auto mb-3" /> 
+                          <h3 className="font-bold text-xl mb-1">{event.nameTagalog}</h3>
+                          <p className="text-sm opacity-90">{event.name}</p>
+                          {isCollected && (
+                            <div className="mt-3">
+                              <Star className="w-8 h-8 mx-auto" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Event Details Modal */}
+                {selectedEvent && (
+                  <div className="bg-white rounded-2xl shadow-2xl p-6 mb-6 border-4 border-purple-300">
+                    <div className="flex items-start gap-4">
+                      <div className={`${selectedEvent.color} rounded-xl p-4`}>
+                        {/* Using the new class for consistent sizing in the modal */}
+                        {React.createElement(selectedEvent.icon, { className: "svg-icon-style w-16 h-16" })}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-1">{selectedEvent.nameTagalog}</h3>
+                        <p className="text-gray-600 mb-4">{selectedEvent.name}</p>
+                        
+                        <div className="bg-purple-50 rounded-xl p-4 mb-3">
+                          <p className="text-gray-700 mb-2">{selectedEvent.descriptionTagalog}</p>
+                          <p className="text-gray-600 text-sm">{selectedEvent.description}</p>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 text-white">
+                          <p className="font-bold mb-1">Pagpapahalaga / Civic Value:</p>
+                          <p className="text-lg">{selectedEvent.valueTagalog} / {selectedEvent.value}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Completion Message */}
+                {collectedEvents.length === schoolEvents.length && (
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl shadow-2xl p-8 text-center">
+                    {/* Using the simple Trophy icon for the completion message */}
+                    <Trophy className="w-20 h-20 mx-auto text-white mb-4" /> 
+                    <h2 className="text-3xl font-bold text-white mb-2">Ang Galing! Excellent!</h2>
+                    <p className="text-white text-lg mb-4">
+                      You've learned about all important school events!
+                    </p>
+                    <p className="text-white mb-6">
+                      Natuto ka tungkol sa lahat ng mahahalagang pangyayari sa paaralan!
+                    </p>
+                    <button
+                      onClick={resetGame}
+                      className="bg-white text-purple-600 px-8 py-3 rounded-full font-bold hover:scale-105 transform transition"
+                    >
+                      Maglaro Muli / Play Again
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SchoolEventsGame />);
+    </script>
+</body>
+</html>
