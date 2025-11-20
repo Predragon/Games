@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtraction Master - Samantha's Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .star-icon {
+            color: #fbbf24;
+            font-size: 1.8rem;
+        }
+
+        .problem-counter {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .problem-area {
+            background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .problem-text {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .answer-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .equals-sign {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .answer-input {
+            width: 150px;
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            border: 4px solid #a855f7;
+            border-radius: 15px;
+            padding: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .answer-input:focus {
+            border-color: #7c3aed;
+        }
+
+        .answer-input:disabled {
+            background: #f3f4f6;
+        }
+
+        .feedback {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .feedback.incorrect {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .feedback-icon {
+            font-size: 2rem;
+        }
+
+        .check-button {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .check-button:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .check-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            margin-top: 30px;
+            background: #e5e7eb;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+            transition: width 0.5s ease;
+        }
+
+        .completion-screen {
+            text-align: center;
+        }
+
+        .trophy-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+        }
+
+        .completion-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #7c3aed;
+            margin-bottom: 10px;
+        }
+
+        .percentage {
+            font-size: 2rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .message.perfect {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.excellent {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .message.good {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .message.practice {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .play-again-button {
+            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .play-again-button:hover {
+            transform: scale(1.05);
+        }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #7c3aed;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .home-button:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            .problem-text {
+                font-size: 3rem;
+            }
+
+            .answer-input {
+                font-size: 2.5rem;
+                width: 120px;
+            }
+
+            .completion-title {
+                font-size: 2rem;
+            }
+
+            .final-score {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-button">🏠 Home</a>
+    
+    <div class="game-container" id="gameContainer">
+        <!-- Game content will be inserted here by JavaScript -->
+    </div>
+
+    <script>
+        const problems = [
+            { q: '6 - 5', a: 1 },
+            { q: '8 - 3', a: 5 },
+            { q: '5 - 2', a: 3 },
+            { q: '7 - 2', a: 5 },
+            { q: '9 - 4', a: 5 },
+            { q: '5 - 2', a: 3 },
+            { q: '9 - 9', a: 0 },
+            { q: '6 - 3', a: 3 },
+            { q: '9 - 6', a: 3 },
+            { q: '5 - 4', a: 1 },
+            { q: '3 - 3', a: 0 },
+            { q: '4 - 4', a: 0 },
+            { q: '4 - 0', a: 4 },
+            { q: '5 - 1', a: 4 },
+            { q: '7 - 5', a: 2 },
+            { q: '8 - 4', a: 4 }
+        ];
+
+        let currentProblem = 0;
+        let score = 0;
+        let showFeedback = false;
+
+        function renderGame() {
+            const container = document.getElementById('gameContainer');
+            const progress = ((currentProblem + 1) / problems.length) * 100;
+
+            container.innerHTML = `
+                <div class="header">
+                    <div class="score-display">
+                        <span class="star-icon">⭐</span>
+                        <span>Score: ${score}</span>
+                    </div>
+                    <div class="problem-counter">Problem ${currentProblem + 1}/${problems.length}</div>
+                </div>
+
+                <div class="problem-area">
+                    <div class="problem-text">${problems[currentProblem].q}</div>
+                    <div class="answer-section">
+                        <span class="equals-sign">=</span>
+                        <input 
+                            type="number" 
+                            id="answerInput" 
+                            class="answer-input" 
+                            ${showFeedback ? 'disabled' : ''}
+                            autofocus
+                        />
+                    </div>
+                </div>
+
+                <div id="feedbackArea"></div>
+
+                <button 
+                    id="checkButton" 
+                    class="check-button"
+                    ${showFeedback ? 'disabled' : ''}
+                >
+                    Check Answer
+                </button>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+            `;
+
+            const input = document.getElementById('answerInput');
+            const button = document.getElementById('checkButton');
+
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && input.value !== '' && !showFeedback) {
+                    checkAnswer();
+                }
+            });
+
+            button.addEventListener('click', () => {
+                if (input.value !== '' && !showFeedback) {
+                    checkAnswer();
+                }
+            });
+
+            input.focus();
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = parseInt(input.value);
+            const correct = userAnswer === problems[currentProblem].a;
+            
+            showFeedback = true;
+            
+            const feedbackArea = document.getElementById('feedbackArea');
+            
+            if (correct) {
+                score++;
+                feedbackArea.innerHTML = `
+                    <div class="feedback correct">
+                        <span class="feedback-icon">😊</span>
+                        <span>Correct! Great job! 🎉</span>
+                    </div>
+                `;
+            } else {
+                feedbackArea.innerHTML = `
+                    <div class="feedback incorrect">
+                        <span class="feedback-icon">😔</span>
+                        <span>Not quite. The answer is ${problems[currentProblem].a}. Keep trying!</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('checkButton').disabled = true;
+            input.disabled = true;
+
+            setTimeout(() => {
+                if (currentProblem < problems.length - 1) {
+                    currentProblem++;
+                    showFeedback = false;
+                    renderGame();
+                } else {
+                    showCompletion();
+                }
+            }, 1500);
+        }
+
+        function showCompletion() {
+            const container = document.getElementById('gameContainer');
+            const percentage = Math.round((score / problems.length) * 100);
+            
+            let message = '';
+            let messageClass = '';
+            
+            if (percentage === 100) {
+                message = "Perfect Score! You're a subtraction star! ⭐";
+                messageClass = 'perfect';
+            } else if (percentage >= 80) {
+                message = "Excellent work! Keep practicing! 🌟";
+                messageClass = 'excellent';
+            } else if (percentage >= 60) {
+                message = "Good effort! Practice makes perfect! 💪";
+                messageClass = 'good';
+            } else {
+                message = "Keep practicing! You'll get better! 📚";
+                messageClass = 'practice';
+            }
+
+            container.innerHTML = `
+                <div class="completion-screen">
+                    <div class="trophy-icon">🏆</div>
+                    <h2 class="completion-title">Game Complete!</h2>
+                    <div class="final-score">${score}/${problems.length}</div>
+                    <div class="percentage">${percentage}% Correct</div>
+                    <div class="message ${messageClass}">${message}</div>
+                    <button class="play-again-button" onclick="resetGame()">Play Again</button>
+                </div>
+            `;
+        }
+
+        function resetGame() {
+            currentProblem = 0;
+            score = 0;
+            showFeedback = false;
+            renderGame();
+        }
+
+        // Initialize game
+        renderGame();
+    </script>
+</body>
+</html>
